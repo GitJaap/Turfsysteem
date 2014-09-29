@@ -23,16 +23,11 @@ public class Run {
 		long t = System.currentTimeMillis();
 		int i = 0;
 		long h;
-		while(i < 10){
-			if(System.currentTimeMillis() - t > 500)
-			{
-				h = System.currentTimeMillis();
+		h = System.currentTimeMillis();
 				dB.runQuery("Select admin_change_date from admin_changes order by admin_change_id limit 1");
 				System.out.println(dB.getNextStr(1));
 				System.out.println(System.currentTimeMillis()-h);
 				//Kijk eens of dit werkt!
-			}
-		}
 		
 	
 	}
