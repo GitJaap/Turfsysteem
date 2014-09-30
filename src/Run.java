@@ -9,27 +9,7 @@ public class Run {
 	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	public static void main(String[] args)
 	{
-		//ProteusGui pe = new ProteusGui();
-		//Interface_1 pe = new Interface_1();
-		//ProteusGui2 pe = new ProteusGui2();
-		/*long t = System.currentTimeMillis();
-		Initializer init = new Initializer();
-		init.reInitializeBar();
-		Bar[] bars = init.getBars();
-		ProductPriceClass ppc = init.getPPC();
-		t = t-System.currentTimeMillis();
-		System.out.println(t );*/
-		DBConnection dB = new DBConnection();
-		long t = System.currentTimeMillis();
-		int i = 0;
-		long h;
-		h = System.currentTimeMillis();
-				dB.runQuery("Select admin_change_date from admin_changes order by admin_change_id limit 1");
-				System.out.println(dB.getNextStr(1));
-				System.out.println(System.currentTimeMillis()-h);
-				//Kijk eens of dit werkt!
-		
-	
+		ProteusGui2 pe = new ProteusGui2();
 	}
 
 	
