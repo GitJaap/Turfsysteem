@@ -65,8 +65,6 @@ public class Initializer {
 						if(dB.getBool(1) && dB.getInt(2)<31)
 						{
 							clientsValid[i] = false;
-							System.out.println(String.format("Client_id %d is false",clients[i].id));
-							System.out.println(dB.getInt(2));
 						}
 						else
 						{
