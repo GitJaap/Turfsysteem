@@ -7,7 +7,7 @@ public class Initializer {
 
 	//variables
 	private DBConnection dB = new DBConnection(); //initialize database connection	
-
+	private Validation vn = new Validation(dB);
 	//startup variables
 	private Bar[] bars;
 	//bar variables
@@ -95,11 +95,14 @@ public class Initializer {
 			}
 		}
 	}
-	public void reInitializeBar(){
-		//Get the currently active product price class
-		dB.runQuery("Select product_price_class_id, class_name from product_price_class where activated = true LIMIT 1");
+	public void reInitializeBar(int curBarID){
+		//Get the currently active product price class by checking the last admin change
+		ppc = new ProductPriceClass();
+		vn.validateProducts(ppc);
+		//get the name corresponding to the id
+		dB.runQuery(String.format("Select class_name FROM product_price_class WHERE product_price_class_id = %d LIMIT 1",ppc.id));
 		dB.commit();
-		ppc = new ProductPriceClass(dB.getNextInt(1),dB.getStr(2));
+		ppc.name = dB.getNextStr(1);
 
 		//now insert for this price_class the product_classes like eten drinken shift
 		dB.runQuery("Select * from product_class");
@@ -109,14 +112,14 @@ public class Initializer {
 		int i = 0;
 		do
 		{
-			ppc.productClasses[i] = new ProductClass(dB.getInt(1),dB.getStr(2),dB.getBool(3),dB.getStr(4));
+			ppc.productClasses[i] = new ProductClass(dB.getInt(1),dB.getStr(2),dB.getStr(3));
 			i++;
 		}while(dB.next());
 
-		//insert for each class and price class the relevant products into ppc
+		//insert the visible products for this bar for each class and the current price class into ppc
 		for(int j=0; j < ppc.productClasses.length;j++)
 		{
-			dB.runQuery(String.format("Select product_version_id, product_type_id,product_price,product_name,product_visibility FROM product_types WHERE product_class_id = %d AND product_price_class_id = %d",ppc.productClasses[j].id,ppc.id));
+			dB.runQuery(String.format("Select p.product_version_id, p.product_type_id,p.product_price,p.product_name FROM product_types as p INNER JOIN product_bar_visibility as b USING (product_version_id,product_type_id) WHERE p.product_class_id = %d AND p.product_price_class_id = %d AND b.product_bar_visibility = true AND b.bar_id = %d",ppc.productClasses[j].id,ppc.id,curBarID));
 			dB.commit();
 			int nProducts = dB.getNumRows();
 			if(nProducts > 0){
@@ -124,12 +127,12 @@ public class Initializer {
 				dB.gofirst();
 				i=0;
 				do{
-					ppc.productClasses[j].products[i] = new Product(dB.getInt(1),dB.getInt(2),dB.getInt(3),dB.getStr(4),dB.getBool(5));
+					ppc.productClasses[j].products[i] = new Product(dB.getInt(1),dB.getInt(2),dB.getInt(3),dB.getStr(4));
 					i++;
 				}while(dB.next());
 			}
 			else
-				ppc.productClasses[j] = null;
+				ppc.productClasses[j].products = null;
 		}
 	}
 
@@ -148,6 +151,10 @@ public class Initializer {
 	public DBConnection getDB()
 	{
 		return dB;
+	}
+	public Validation getVN()
+	{
+		return vn;
 	}
 
 }

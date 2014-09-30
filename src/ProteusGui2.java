@@ -13,7 +13,6 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 	//Global variables
 	//create the database initialization and validation objects
 	private Initializer init = new Initializer();
-	private Validation vn = new Validation(init.getDB());
 	//for gui
 	private WindowListener exitListener = new WindowAdapter(){
 		public void windowClosing(WindowEvent e){
@@ -30,6 +29,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 	private JPanel startPanelInside = new JPanel();
 	private JButton barButton = new JButton("BarGilde");
 	private JButton beheerButton = new JButton("Beheer");
+	private Bar[] bars;
 	private Bar curBar;
 	private Client curClient;
 	private JButton[] barButtons;
@@ -43,12 +43,14 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 	//Variables used to check if all local data is still up to date
 	// VARIABLES for the BAR screen
 	//----------------------------------------------------------
-	//Read the products from the database
-	private DecimalFormat df;
-	private Bar[] bars;
+	//main data attributes
+	private ProductPriceClass ppc;
 	//declare panels used
-	private JPanel barPanel;
-	private JPanel orderPanel;
+	private JPanel ProductPanel = new JPanel();
+	private JPanel topPanel = new JPanel();
+	private JPanel orderPanel = new JPanel();
+	private JPanel bottomPanel = new JPanel();
+	private JPanel sidePanel = new JPanel();
 	//Declare GUI attributes
 	private JTextArea testArea;
 	private JButton[][] productButtons;
@@ -97,42 +99,55 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 	}
 	public void initBarComponents()
 	{
-		/*//set the screentitle
+		//read data from database
+		init.reInitializeBar(curBar.id);
+		ppc = init.getPPC();
+		//set the screentitle
 		setTitle("Proteus Bargilde");
-		// initialize Variables read from database
-		productClass = turf.getProductClass();
-		productPriceClass = turf.getProductPriceClass();
-		classProducts = turf.getClassProducts();
-		classProductsPrice = turf.getClassProductsPrice();
-		df = turf.getdf();
+		this.setLayout(new BorderLayout());
 
 		//initialize the panels
-		barPanel = new JPanel();
-		orderPanel = new JPanel();
 
 
 		//Declare GUI attributes
-		productButtons =  new JButton[productClass.length][];
-		orders = new int[productClass.length][];
-		orderedButtons = new JButton[productClass.length][];
+		productButtons =  new JButton[ppc.productClasses.length][];
+		orders = new int[ppc.productClasses.length][];
+		orderedButtons = new JButton[ppc.productClasses.length][];
 
 		//loop through all available product classes and create buttons accordingly
-		for(int i = 0; i < productClass.length;i++){
-			//create empty orders array
-			orders[i] = new int[classProducts[i].length];
-			orderedButtons[i] = new JButton[classProducts[i].length];
-			//create productbuttons
-			productButtons[i] = new JButton[classProducts[i].length];
-			for(int j = 0; j < classProducts[i].length;j++){
-				productButtons[i][j] = new JButton();
-				productButtons[i][j].setText(classProducts[i][j] +" "+ df.format((double)classProductsPrice[i][j]/100));
-				productButtons[i][j].addActionListener(this);
-				productButtons[i][j].addMouseListener(this);
-				productButtons[i][j].setPreferredSize(new Dimension(150,80));
+		for(int i = 0; i < ppc.productClasses.length;i++){
+			if(ppc.productClasses[i].products != null){//check if there are products in the current class
+				System.out.println(ppc.productClasses[i].products.length);
+				int nProducts = ppc.productClasses[i].products.length;
+				//initiate the orderbuttons and orderarrays
+				orders[i] = new int[nProducts];
+				orderedButtons[i] = new JButton[nProducts];
+				//create productbuttons
+				productButtons[i] = new JButton[nProducts];
+				for(int j = 0; j < nProducts;j++){
+					productButtons[i][j] = new JButton();
+					productButtons[i][j].setText(ppc.productClasses[i].products[j].name +" "+ init.getdf().format((double)ppc.productClasses[i].products[j].price/100));
+					productButtons[i][j].addActionListener(this);
+					productButtons[i][j].addMouseListener(this);
+					productButtons[i][j].setBackground(ppc.productClasses[i].color);
+					productButtons[i][j].setPreferredSize(new Dimension(150,80));
+					ProductPanel.add(productButtons[i][j]);
+				}
+			}
+			else{
+				productButtons[i] = null;
 			}
 		}
-		// add class and productbuttons to the south area of the main panel
-	}*/
+		
+		topPanel.add(new JLabel("PROTEUS ERETES BARGILDE"));
+		ProductPanel.setLayout(new GridLayout(5,3));
+		
+		this.add(topPanel,"North");
+		this.add(ProductPanel,"Center");
+		this.add(bottomPanel,"South");
+		this.add(sidePanel,"East");
+		this.repaint();
+		this.validate();;
 	}
 
 	//main eventhandler for buttons being pressed
@@ -143,14 +158,16 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 
 		if(aE.getSource() == barButton)
 		{
+			bar=true;
 			// create the bar buttons to select from
 			createBarButtons();
 		}
 		if(aE.getSource() == beheerButton)
 		{
-
+			beheer=true;
 			//create the bar buttons to select from
 			createBarButtons();
+			beheer=true;
 		}
 		if(needBarSelect == true)
 		{
@@ -159,7 +176,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 				if(aE.getSource() == barButtons[i])
 				{
 					//check if there has not been a more recent login
-					if(vn.validateClients()){
+					if(init.getVN().validateClients()){
 						curBar = bars[i];
 						needBarSelect = false;
 						needClientSelect = true;
@@ -199,7 +216,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 			{
 				if(aE.getSource() == clientButtons[i])
 				{
-					if(vn.validateClients()){ //again check if someone has not logged in before us
+					if(init.getVN().validateClients()){ //again check if someone has not logged in before us
 						curClient = curBar.clients[i];
 						needClientSelect = false;
 						//create a log so other pc's can't select the same client
@@ -225,8 +242,8 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 				}
 			}
 		}
-
-
+		//---------------------------------------------------------------------------------------------------------------------
+		//END eventhandlers for the start panel
 
 
 		//eventhandlers for the BAR panel
@@ -319,7 +336,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 	private void createBarButtons()
 	{
 		//get the current visible bars from the database and the last client log id to verify them later
-		vn.validateClients();
+		init.getVN().validateClients();
 		bars = init.getBars();			
 		//remove any current buttons
 		startPanelInside.removeAll();

@@ -16,4 +16,8 @@ public class ProductPriceClass {
 		id = idIn;
 		name= String.valueOf(nameIn);
 	}
+	public ProductPriceClass()
+	{
+		
+	}
 }
