@@ -337,6 +337,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 	{
 		//get the current visible bars from the database and the last client log id to verify them later
 		init.getVN().validateClients();
+		init.reInitializeStart();
 		bars = init.getBars();			
 		//remove any current buttons
 		startPanelInside.removeAll();
