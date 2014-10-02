@@ -169,6 +169,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 			createBarButtons();
 			beheer=true;
 		}
+		//check if the bar-selection buttons are being showed on the screen
 		if(needBarSelect == true)
 		{
 			for(int i = 0; i < bars.length;i++)
@@ -176,7 +177,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 				if(aE.getSource() == barButtons[i])
 				{
 					//check if there has not been a more recent login
-					if(init.getVN().validateClients()){
+					if(init.getVN().validateClientLogs()){
 						curBar = bars[i];
 						needBarSelect = false;
 						needClientSelect = true;
@@ -209,18 +210,21 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 				}
 			}
 		}
-
+		//check if the clientselectionbuttons are being showed on the screen
 		if(needClientSelect == true)
 		{
 			for(int i = 0; i < curBar.clients.length;i++)
 			{
 				if(aE.getSource() == clientButtons[i])
 				{
-					if(init.getVN().validateClients()){ //again check if someone has not logged in before us
+					if(init.getVN().validateClientLogs()){ //again check if someone has not logged in before us
 						curClient = curBar.clients[i];
 						needClientSelect = false;
 						//create a log so other pc's can't select the same client
 						init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",curClient.id));
+						init.getDB().commit();
+						//set the current client_is_active state to true
+						init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",curClient.id));
 						init.getDB().commit();
 						//now remove everything and either initiate the bar or the beheerpage
 						this.remove(startPanelInside);
@@ -336,8 +340,8 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 	private void createBarButtons()
 	{
 		//get the current visible bars from the database and the last client log id to verify them later
-		init.getVN().validateClients();
-		init.reInitializeStart();
+		init.getVN().validateClientLogs();//set the last login-id at the last pk of the client_logs table
+		init.reInitializeStart(); // re-read the available clients,bars from the database
 		bars = init.getBars();			
 		//remove any current buttons
 		startPanelInside.removeAll();

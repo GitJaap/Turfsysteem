@@ -304,6 +304,7 @@ public class DBConnection {
 			return -9999;
 		}
 	}
+	
 
 	//gets the number of rows in a resultset
 	public int getNumRows()

@@ -1,6 +1,9 @@
 //This class takes care of all local data-validation by checking if there has not been an update to certain data since last check
 import data.*;
+import java.util.*;
 public class Validation {
+	private final int CLIENT_UPDATE_INTERVAL_SEC = 60;
+	
 	private DBConnection dB;
 	private int lastClientLogID;
 	private int lastAdminChangeID;
@@ -12,8 +15,29 @@ public class Validation {
 		lastAdminChangeID = 0;
 	}
 	
-	//check for more recent logs than currently known and report if false.
+	//check for clients that have not send an update for more then CLIENT_UPDATE_INTERVAL seconds
 	public boolean validateClients()
+	{
+		boolean ret = true;
+		String clientIDs = "";
+		dB.runQuery("SELECT client_id,TIME_TO_SEC(TIMEDIFF(NOW(),last_client_update)) FROM clients WHERE client_is_active = true");
+		dB.commit();
+		while(dB.next())
+		{
+			if(dB.getInt(2) > CLIENT_UPDATE_INTERVAL_SEC)
+			{
+				ret = false;
+				clientIDs += "OR client_id = " +Integer.toString(dB.getInt(1)) + " ";
+			}
+		}
+		//now change the inactive client_is_active states to false
+		dB.runUpdate("UPDATE clients SET client_is_active = false WHERE 1=2 "+ clientIDs);
+		return ret;
+		
+	}
+	
+	//check for more recent logs than currently known and report if false.
+	public boolean validateLastClientLog()
 	{
 		dB.runQuery("SELECT client_log_id from client_logs ORDER BY client_log_id DESC LIMIT 1");
 		dB.commit();

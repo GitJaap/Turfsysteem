@@ -27,6 +27,8 @@ public class Initializer {
 		df = new DecimalFormat("\u20ac0.00", otherSymbols);
 	}
 	public void reInitializeStart(){
+		//check if all logged-in clients are actually logged in, otherwise log them out
+		vn.validateClients();
 		//retrieve only the visible bars from the database
 		dB.runQuery("Select bar_id, bar_name, current_bar_cash from bars where bar_visibility = true");
 		dB.commit();
@@ -43,7 +45,7 @@ public class Initializer {
 		for(int j =0; j < bars.length; j++)
 		{
 			Client [] clients;
-			dB.runQuery(String.format("Select client_id,client_name FROM clients WHERE bar_id = %d AND client_visibility = true",bars[j].id));;
+			dB.runQuery(String.format("Select client_id,client_name FROM clients WHERE bar_id = %d AND client_visibility = true AND client_is_active = false",bars[j].id));;
 			dB.commit();
 			int nClients = dB.getNumRows();
 			if(nClients > 0){
