@@ -1,6 +1,10 @@
+package gui;
+
 import javax.swing.*;
 
-import data.*;
+import database.*;
+import database.data.*;
+import main.Run;
 
 import java.text.*;
 import java.awt.*;
@@ -177,7 +181,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 				if(aE.getSource() == barButtons[i])
 				{
 					//check if there has not been a more recent login
-					if(init.getVN().validateClientLogs()){
+					if(init.getVN().validateLastClientLog()){
 						curBar = bars[i];
 						needBarSelect = false;
 						needClientSelect = true;
@@ -217,7 +221,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 			{
 				if(aE.getSource() == clientButtons[i])
 				{
-					if(init.getVN().validateClientLogs()){ //again check if someone has not logged in before us
+					if(init.getVN().validateLastClientLog()){ //again check if someone has not logged in before us
 						curClient = curBar.clients[i];
 						needClientSelect = false;
 						//create a log so other pc's can't select the same client
@@ -340,7 +344,7 @@ public class ProteusGui2 extends JFrame implements ActionListener, MouseListener
 	private void createBarButtons()
 	{
 		//get the current visible bars from the database and the last client log id to verify them later
-		init.getVN().validateClientLogs();//set the last login-id at the last pk of the client_logs table
+		init.getVN().validateLastClientLog();//set the last login-id at the last pk of the client_logs table
 		init.reInitializeStart(); // re-read the available clients,bars from the database
 		bars = init.getBars();			
 		//remove any current buttons

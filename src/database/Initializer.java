@@ -1,7 +1,13 @@
+package database;
 import java.util.*;
 import java.text.*;
 
-import data.*;
+import database.*;
+import database.data.Bar;
+import database.data.Client;
+import database.data.Product;
+import database.data.ProductClass;
+import database.data.ProductPriceClass;
 //This class reads the database to initialize the GUI variables
 public class Initializer {
 
@@ -12,6 +18,8 @@ public class Initializer {
 	private Bar[] bars;
 	//bar variables
 	private ProductPriceClass ppc;
+	private Client curClient;
+	private Bar curBar;
 
 
 	//create a format for displaying cash amount
@@ -158,5 +166,21 @@ public class Initializer {
 	{
 		return vn;
 	}
-
+	public void setCurClient(Client curClientIn)
+	{
+		curClient = curClientIn;
+	}
+	public void setCurBar(Bar curBarIn)
+	{
+		curBar = curBarIn;
+	}
+	public Client getCurClient()
+	{
+		return curClient;
+	}
+	public Bar getCurBar()
+	{
+		return curBar;
+	}
+	
 }
