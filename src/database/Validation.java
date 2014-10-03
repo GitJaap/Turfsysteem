@@ -22,19 +22,23 @@ public class Validation {
 	public boolean validateClients()
 	{
 		boolean ret = true;
-		String clientIDs = "";
+		String clientIDString = "";
+		ArrayList<Integer> clientIDs = new ArrayList<Integer>();
 		dB.runQuery("SELECT client_id,TIME_TO_SEC(TIMEDIFF(NOW(),last_client_update)) FROM clients WHERE client_is_active = true");
-		dB.commit();
 		while(dB.next())
 		{
 			if(dB.getInt(2) > CLIENT_UPDATE_INTERVAL_SEC)
 			{
 				ret = false;
-				clientIDs += "OR client_id = " +Integer.toString(dB.getInt(1)) + " ";
+				clientIDs.add(dB.getInt(1));
+				clientIDString += "OR client_id = " +Integer.toString(clientIDs.get(clientIDs.size()-1)) + " ";
 			}
 		}
 		//now change the inactive client_is_active states to false
-		dB.runUpdate("UPDATE clients SET client_is_active = false WHERE 1=2 "+ clientIDs);
+		dB.runUpdate("UPDATE clients SET client_is_active = false WHERE 1=2 "+ clientIDString);
+		for(int i =0; i < clientIDs.size();i++)
+		dB.runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , false, '0000-00-00 00:00:00')",clientIDs.get(i)));
+		dB.commit();
 		return ret;
 		
 	}

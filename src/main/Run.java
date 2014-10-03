@@ -13,6 +13,7 @@ public class Run {
 	public static void main(String[] args)
 	{
 		//ProteusGui2 pe = new ProteusGui2();
+		screenSize = new Dimension(screenSize.width,screenSize.height-40);
 		TurfGuiMain gui = new TurfGuiMain();
 		
 	}
