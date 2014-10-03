@@ -1,10 +1,11 @@
+package database;
 import java.sql.*;
 import java.util.*;
 
 public class DBConnection {
 	// connection strings
 	private static final String DRIVER = "com.mysql.jdbc.Driver";
-	private String URL = "jdbc:mysql://192.168.1.37:3306/turf_db";
+	private String URL = "jdbc:mysql://82.169.105.185:3306/turf_db";
 	private String USERNAME = "test";
 	private String PASSWORD = "test";
 

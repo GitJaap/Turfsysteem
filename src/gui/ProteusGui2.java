@@ -1,6 +1,10 @@
+package gui;
+
 import javax.swing.*;
 
-import data.*;
+import database.*;
+import database.data.*;
+import main.Run;
 
 import java.text.*;
 import java.awt.*;

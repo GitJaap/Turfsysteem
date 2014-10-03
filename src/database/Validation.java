@@ -1,5 +1,8 @@
+package database;
 //This class takes care of all local data-validation by checking if there has not been an update to certain data since last check
-import data.*;
+import database.*;
+import database.data.ProductPriceClass;
+
 import java.util.*;
 public class Validation {
 	private final int CLIENT_UPDATE_INTERVAL_SEC = 60;
