@@ -32,7 +32,7 @@ public class TurfGuiMain extends JFrame{
 		//Gui variables
 		private CardLayout screenCards;
 		private JPanel contentPanel;
-		private BarPanel barPanel;
+		private BarPanel barPanel; 
 		private StartPanel startPanel;
 		
 		
@@ -60,9 +60,8 @@ public class TurfGuiMain extends JFrame{
 			contentPanel.add(startPanel, "START");
 			contentPanel.add(barPanel, "BAR");
 			screenCards.show(contentPanel, "START");
-			
-			
-			
+			this.add(contentPanel, "Center");
+			this.setVisible(true);
 			
 		}
 }

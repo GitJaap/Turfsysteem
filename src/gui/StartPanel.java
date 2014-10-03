@@ -54,14 +54,19 @@ public class StartPanel extends JPanel implements ActionListener{
 		barButton.addActionListener(this);
 		beheerButton.addActionListener(this);
 		Dimension d = new Dimension(200,100);
+		barButton.setPreferredSize(d);
+		barButton.setSize(d);
 		barButton.setMinimumSize(d);
 		barButton.setMaximumSize(d);
+		beheerButton.setSize(d);
+		beheerButton.setPreferredSize(d);
 		beheerButton.setMaximumSize(d);
 		beheerButton.setMinimumSize(d);
 		startLabel.setMinimumSize(d);
 		startLabel.setMaximumSize(d);
 		startPanelOutside.setLayout(new BoxLayout(startPanelOutside, BoxLayout.LINE_AXIS));
 		startPanelInside.setLayout(new BoxLayout(startPanelInside, BoxLayout.PAGE_AXIS));
+		startPanelInside.add(Box.createVerticalStrut((Run.screenSize.height-300)/2));
 		startPanelInside.add(startLabel);
 		startPanelInside.add(barButton);
 		startPanelInside.add(beheerButton);
@@ -101,6 +106,7 @@ public class StartPanel extends JPanel implements ActionListener{
 					//check if there has not been a more recent login
 					if(init.getVN().validateLastClientLog()){
 						init.setCurBar(bars[i]);
+						curBar = init.getCurBar();
 						needBarSelect = false;
 						needClientSelect = true;
 						//remove the barbuttons
@@ -117,6 +123,8 @@ public class StartPanel extends JPanel implements ActionListener{
 								Dimension d = new Dimension(200,50);
 								clientButtons[j].setMinimumSize(d);
 								clientButtons[j].setMaximumSize(d);
+								clientButtons[j].setSize(d);
+								clientButtons[j].setPreferredSize(d);
 								startPanelInside.add(clientButtons[j]);
 							}
 						}
@@ -135,7 +143,7 @@ public class StartPanel extends JPanel implements ActionListener{
 		//check if the clientselectionbuttons are being showed on the screen
 		if(needClientSelect == true)
 		{
-			for(int i = 0; i < curBar.clients.length;i++)
+			for(int i = 0; i < init.getCurBar().clients.length;i++)
 			{
 				if(aE.getSource() == clientButtons[i])
 				{
@@ -143,9 +151,9 @@ public class StartPanel extends JPanel implements ActionListener{
 						init.setCurClient(init.getCurBar().clients[i]);
 						needClientSelect = false;
 						//create a log so other pc's can't select the same client
-						init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",curClient.id));
+						init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",init.getCurClient().id));
 						//set the current client_is_active state to true
-						init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",curClient.id));
+						init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",init.getCurClient().id));
 						init.getDB().commit();
 						//now remove everything and either initiate the bar or the beheerpage
 						this.remove(startPanelInside);
@@ -181,6 +189,7 @@ public class StartPanel extends JPanel implements ActionListener{
 		//remove any current buttons
 		startPanelInside.removeAll();
 		startPanelInside.setLayout(new BoxLayout(startPanelInside, BoxLayout.PAGE_AXIS));
+		startPanelInside.add(Box.createVerticalStrut((Run.screenSize.height-300)/2));
 		startPanelInside.add(startLabel);
 		//initiate the barbutton array
 		barButtons = new JButton[bars.length];
@@ -192,6 +201,8 @@ public class StartPanel extends JPanel implements ActionListener{
 			Dimension d = new Dimension(200,50);
 			barButtons[i].setMinimumSize(d);
 			barButtons[i].setMaximumSize(d);
+			barButtons[i].setSize(d);
+			barButtons[i].setPreferredSize(d);
 			startPanelInside.add(barButtons[i]);
 		}
 		startLabel.setText("Selecteer Bar");

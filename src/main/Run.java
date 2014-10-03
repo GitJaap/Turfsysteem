@@ -1,5 +1,6 @@
 package main;
 import gui.ProteusGui2;
+import gui.TurfGuiMain;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -13,11 +14,7 @@ public class Run {
 	public static void main(String[] args)
 	{
 		//ProteusGui2 pe = new ProteusGui2();
-		Initializer init = new Initializer();
-		if(init.getCurClient() == null)
-			{
-			System.out.println("het is null");
-			};
+		TurfGuiMain gui = new TurfGuiMain();
 	}
 
 	
