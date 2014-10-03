@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,7 +22,9 @@ public class StartPanel extends JPanel implements ActionListener{
 	
 	//private variables
 	private Initializer init;
+	private CardLayout screenCards;
 	private BarPanel barPanel;
+	private JPanel contentPanel;
 	
 	private JPanel startPanelOutside = new JPanel();
 	private JPanel startPanelInside = new JPanel();
@@ -39,10 +42,12 @@ public class StartPanel extends JPanel implements ActionListener{
 	private boolean bar;
 	
 	
-	public StartPanel(Initializer initIn, BarPanel barPanelIn){
+	public StartPanel(Initializer initIn, CardLayout screenCardsIn, BarPanel barPanelIn, JPanel contentPanelIn){
 		//set the initializervariable
 		init=initIn;
+		screenCards = screenCardsIn;
 		barPanel = barPanelIn;
+		contentPanel = contentPanelIn;
 		
 		startLabel = new JLabel("Kies Gebruiker");
 		startLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -139,7 +144,6 @@ public class StartPanel extends JPanel implements ActionListener{
 						needClientSelect = false;
 						//create a log so other pc's can't select the same client
 						init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",curClient.id));
-						init.getDB().commit();
 						//set the current client_is_active state to true
 						init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",curClient.id));
 						init.getDB().commit();
@@ -149,7 +153,10 @@ public class StartPanel extends JPanel implements ActionListener{
 						this.validate();
 						this.repaint();
 						if(bar == true)
-							barPanel.initBarComponents();
+						{
+							barPanel.initBarComponents(curBar,curClient);
+							
+						}
 						if(beheer == true)
 						{
 							//TODO  stuff for the beheerscreen

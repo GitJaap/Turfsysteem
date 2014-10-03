@@ -12,7 +12,12 @@ public class Run {
 	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	public static void main(String[] args)
 	{
-		ProteusGui2 pe = new ProteusGui2();
+		//ProteusGui2 pe = new ProteusGui2();
+		Initializer init = new Initializer();
+		if(init.getCurClient() == null)
+			{
+			System.out.println("het is null");
+			};
 	}
 
 	

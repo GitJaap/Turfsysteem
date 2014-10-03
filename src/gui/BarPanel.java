@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -25,7 +26,8 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		private Bar curBar;
 		private Client curClient;
 		//set a pointer to the panel above this one in the panel hierarchy
-		private JPanel previousPanel;
+		private JPanel contentPanel;
+		private CardLayout screenCards;
 		//declare panels used
 		private JPanel productPanel;
 		private JPanel topPanel;
@@ -41,13 +43,12 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		//-----------------------------------------------------
 		//ENd of variables for BAR screen
 	
-	public BarPanel(Initializer initIn,Bar curBarIn,Client curClientIn, JPanel previousPanelIn)
+	public BarPanel(Initializer initIn, CardLayout screenCardsIn,JPanel contentPanelIn)
 	{
 		//set initialization arguments
-		curBar = curBarIn;
-		curClient = curClientIn;
 		init = initIn;
-		previousPanel = previousPanelIn;
+		screenCards = screenCardsIn;
+		contentPanel = contentPanelIn;
 		this.setLayout(new BorderLayout());
 		
 		//initialize the panels
@@ -59,11 +60,14 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 	}
 	
 	
-	public void initBarComponents()
+	public void initBarComponents(Bar curBarIn, Client curClientIn)
 	{
 		//read data from database
+		curBar = curBarIn;
+		curClient = curClientIn;
 		init.reInitializeBar(curBar.id);
 		ppc = init.getPPC();
+		
 
 
 		//Declare GUI attributes
@@ -103,8 +107,7 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		this.add(productPanel,"Center");
 		this.add(bottomPanel,"South");
 		this.add(sidePanel,"East");
-		this.repaint();
-		this.validate();;
+		screenCards.show(contentPanel, "BAR");
 	}
 
 
