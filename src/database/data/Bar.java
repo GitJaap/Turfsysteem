@@ -1,47 +1,66 @@
 package database.data;
 
+import java.util.ArrayList;
+
 
 
 public class Bar {
-	public int id;
-	public String name;
-	public Client[] clients;
-	public boolean visible;
-	public int cash;
+	private int id;
+	private String name;
+	private ArrayList<Client> clients;
+	private int cash;
 	
-	public Bar(int idIn, String nameIn, boolean visIn, int cashIn,Client[] clientsIn){
-		id=idIn;
-		name=nameIn;
-		visible = visIn;
-		cash=cashIn;
-		clients = clientsIn;
-		
-	}
-
-	public Bar(int idIn, String nameIn,int cashIn, boolean visIn){
+	public Bar(int idIn, String nameIn,  int cashIn,ArrayList<Client> clientsIn){
 		id=idIn;
 		name=nameIn;
 		cash=cashIn;
-		visible = visIn;
-		
+		clients = clientsIn;	
 	}
+	public Bar(int idIn, String nameIn,int cashIn){
+		id=idIn;
+		name=nameIn;
+		cash=cashIn;
+		clients = new ArrayList<Client>();
 	
-	
-	public Bar()
-	{}
-	
-	//check if two bars are equal by comparing their id's only(names should always be the same when ids match)
-	public boolean equals(Bar barIn){
-		if(id == barIn.id && clients.length == barIn.clients.length)
-		{
-			for(int i = 0; i < clients.length;i++)
-			{
-				if(!(clients[i].id == barIn.clients[i].id))
-					return false;
-			}
-			return true;
 		}
-		else
-			return false;
+	public Bar(){clients = new ArrayList<Client>();}
+	
+	//getters
+	public int getID(){return id;}
+	public int getCash(){return cash;}
+	public String getName(){return name;}
+	public ArrayList<Client> getClients(){return clients;}
+	public Client getClient(int clientIndex){
+		if(clientIndex>=0 && clientIndex < clients.size())
+			return clients.get(clientIndex);
+		return null;
+	}
+	public int getClientID(int clientIndex)
+	{
+		if(clientIndex>=0 && clientIndex < clients.size())
+			return clients.get(clientIndex).getID();
+		return -9999;
+	}
+	public String getClientName(int clientIndex)
+	{
+		if(clientIndex>=0 && clientIndex < clients.size())
+			return clients.get(clientIndex).getName();
+		return "ERROR INDEX OUT OF BOUNDS";
+	}
+	public int getClientsSize(){return clients.size();}
+	
+	
+	//setters
+	public void setID(int idIn){id = idIn;}
+	public void setCash(int cashIn){cash = cashIn;}
+	public void setName(String nameIn){name=nameIn;}
+	public void addClient(Client clientIn){clients.add(clientIn);}
+	public void setClient(Client clientIn,int clientIndex)
+	{
+		if(clientIndex>=0 && clientIndex < clients.size())
+			clients.set(clientIndex, clientIn);
 	}
 }
+	
+	
+	

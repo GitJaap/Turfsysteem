@@ -4,6 +4,7 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -30,7 +31,7 @@ public class StartPanel extends JPanel implements ActionListener{
 	private JPanel startPanelInside = new JPanel();
 	private JButton barButton = new JButton("BarGilde");
 	private JButton beheerButton = new JButton("Beheer");
-	private Bar[] bars;
+	private ArrayList<Bar> bars;
 	private Bar curBar;
 	private Client curClient;
 	private JButton[] barButtons;
@@ -99,26 +100,26 @@ public class StartPanel extends JPanel implements ActionListener{
 		//check if the bar-selection buttons are being showed on the screen
 		if(needBarSelect == true)
 		{
-			for(int i = 0; i < bars.length;i++)
+			for(int i = 0; i < bars.size();i++)
 			{
 				if(aE.getSource() == barButtons[i])
 				{
 					//check if there has not been a more recent login
 					if(init.getVN().validateLastClientLog()){
-						init.setCurBar(bars[i]);
+						init.setCurBar(bars.get(i));
 						curBar = init.getCurBar();
 						needBarSelect = false;
 						needClientSelect = true;
 						//remove the barbuttons
-						for(int k =0; k< bars.length;k++)
+						for(int k =0; k< bars.size();k++)
 							startPanelInside.remove(barButtons[k]);
 						//initiate the clientbutton array
-						if(!(bars[i].clients == null)){
-							clientButtons = new JButton[bars[i].clients.length];
+						if(bars.get(i).getClientsSize() != 0){
+							clientButtons = new JButton[bars.get(i).getClientsSize()];
 							//list the visible bars as buttons to select
-							for(int j =0;j <bars[i].clients.length;j++)
+							for(int j =0;j <bars.get(i).getClientsSize();j++)
 							{
-								clientButtons[j] = new JButton(bars[i].clients[j].name);
+								clientButtons[j] = new JButton(bars.get(i).getClientName(j));
 								clientButtons[j].addActionListener(this);
 								Dimension d = new Dimension(200,50);
 								clientButtons[j].setMinimumSize(d);
@@ -143,17 +144,17 @@ public class StartPanel extends JPanel implements ActionListener{
 		//check if the clientselectionbuttons are being showed on the screen
 		if(needClientSelect == true)
 		{
-			for(int i = 0; i < init.getCurBar().clients.length;i++)
+			for(int i = 0; i < init.getCurBar().getClientsSize();i++)
 			{
 				if(aE.getSource() == clientButtons[i])
 				{
 					if(init.getVN().validateLastClientLog()){ //again check if someone has not logged in before us
-						init.setCurClient(init.getCurBar().clients[i]);
+						init.setCurClient(init.getCurBar().getClient(i));
 						needClientSelect = false;
 						//create a log so other pc's can't select the same client
-						init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",init.getCurClient().id));
+						init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",init.getCurClient().getID()));
 						//set the current client_is_active state to true
-						init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",init.getCurClient().id));
+						init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",init.getCurClient().getID()));
 						init.getDB().commit();
 						//now remove everything and either initiate the bar or the beheerpage
 						this.remove(startPanelInside);
@@ -192,11 +193,11 @@ public class StartPanel extends JPanel implements ActionListener{
 		startPanelInside.add(Box.createVerticalStrut((Run.screenSize.height-300)/2));
 		startPanelInside.add(startLabel);
 		//initiate the barbutton array
-		barButtons = new JButton[bars.length];
+		barButtons = new JButton[bars.size()];
 		//list the visible bars as buttons to select
-		for(int i =0;i <bars.length;i++)
+		for(int i =0;i <bars.size();i++)
 		{
-			barButtons[i] = new JButton(bars[i].name);
+			barButtons[i] = new JButton(bars.get(i).getName());
 			barButtons[i].addActionListener(this);
 			Dimension d = new Dimension(200,50);
 			barButtons[i].setMinimumSize(d);

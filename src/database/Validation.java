@@ -60,19 +60,25 @@ public class Validation {
 	{
 		dB.runQuery("SELECT admin_change_id,current_product_price_class_id FROM admin_changes ORDER BY admin_change_id DESC LIMIT 1");
 		dB.commit();
-		int newID = dB.getNextInt(1);
-		if(lastAdminChangeID == newID){
-			ppcIn.id = dB.getInt(2);
+		int newAdminID = dB.getNextInt(1);
+		int newPPCID = dB.getInt(2);
+		if(lastAdminChangeID == newAdminID){
 			return true;
 		}
-		else if(newID == -9999)
+		else if(newAdminID == -9999)//check for the possibility of 0 rows returned
 		{
-			ppcIn.id = 1; // if no admin change has been admitted set ppc.id to the first class
+			ppcIn.setID(1); // if no admin change has been admitted set ppc.id to the first class
+			dB.runQuery(String.format("SELECT class_name FROM product_price_class WHERE product_price_class_id = %d",1));
+			dB.commit();
+			ppcIn.setName(dB.getNextStr(1));
 			return true;
 		}
-		else{
-			ppcIn.id = dB.getInt(2);
-			lastAdminChangeID = newID;
+		else{//we know for sure newPPCID has a valid value
+			ppcIn.setID(newPPCID);
+			lastAdminChangeID = newAdminID;
+			dB.runQuery(String.format("SELECT class_name FROM product_price_class WHERE product_price_class_id = %d",newPPCID));
+			dB.commit();
+			ppcIn.setName(dB.getNextStr(1));
 			return false;
 		}
 	}

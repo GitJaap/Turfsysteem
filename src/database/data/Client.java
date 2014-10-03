@@ -1,16 +1,23 @@
 package database.data;
 
 public class Client {
-	public int id;
-	public String name;
-	public boolean visibility;
+	private int id;
+	private String name;
 
-	public Client(int idIn, String nameIn, boolean visibilityIn){
+	public Client(int idIn, String nameIn){
 		id=idIn;
 		name=nameIn;
-		visibility=visibilityIn;
 	}
 	public Client()
 	{
 	}
+	
+	//getters
+	public int getID(){return id;}
+	public String getName(){return name;}
+	
+	//setters
+	public void setID(int idIn){id = idIn;}
+	public void setName(String nameIn){name=nameIn;}
+	
 }

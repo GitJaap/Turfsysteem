@@ -65,21 +65,19 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		//read data from database
 		curBar = curBarIn;
 		curClient = curClientIn;
-		init.reInitializeBar(curBar.id);
+		init.reInitializeBar(curBar.getID());
 		ppc = init.getPPC();
 		
 
 
 		//Declare GUI attributes
-		productButtons =  new JButton[ppc.productClasses.length][];
-		orders = new int[ppc.productClasses.length][];
-		orderedButtons = new JButton[ppc.productClasses.length][];
+		productButtons =  new JButton[ppc.getProductClassesSize()][];
+		orders = new int[ppc.getProductClassesSize()][];
+		orderedButtons = new JButton[ppc.getProductClassesSize()][];
 
 		//loop through all available product classes and create buttons accordingly
-		for(int i = 0; i < ppc.productClasses.length;i++){
-			if(ppc.productClasses[i].products != null){//check if there are products in the current class
-				System.out.println(ppc.productClasses[i].products.length);
-				int nProducts = ppc.productClasses[i].products.length;
+		for(int i = 0; i < ppc.getProductClassesSize();i++){
+				int nProducts = ppc.getProductsSize(i);
 				//initiate the orderbuttons and orderarrays
 				orders[i] = new int[nProducts];
 				orderedButtons[i] = new JButton[nProducts];
@@ -87,18 +85,14 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 				productButtons[i] = new JButton[nProducts];
 				for(int j = 0; j < nProducts;j++){
 					productButtons[i][j] = new JButton();
-					productButtons[i][j].setText(ppc.productClasses[i].products[j].name +" "+ init.getdf().format((double)ppc.productClasses[i].products[j].price/100));
+					productButtons[i][j].setText(ppc.getProductName(i, j) +" "+ init.getdf().format((double)ppc.getProductPrice(i, j)/100));
 					productButtons[i][j].addActionListener(this);
 					productButtons[i][j].addMouseListener(this);
-					productButtons[i][j].setBackground(ppc.productClasses[i].color);
+					productButtons[i][j].setBackground(ppc.getProductClass(i).getColor());
 					productButtons[i][j].setPreferredSize(new Dimension(150,80));
 					productPanel.add(productButtons[i][j]);
 				}
 			}
-			else{
-				productButtons[i] = null;
-			}
-		}
 		
 		topPanel.add(new JLabel("PROTEUS ERETES BARGILDE"));
 		productPanel.setLayout(new GridLayout(5,3));

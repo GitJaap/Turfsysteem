@@ -1,5 +1,4 @@
 package main;
-import gui.ProteusGui2;
 import gui.TurfGuiMain;
 
 import java.sql.SQLException;
@@ -15,6 +14,7 @@ public class Run {
 	{
 		//ProteusGui2 pe = new ProteusGui2();
 		TurfGuiMain gui = new TurfGuiMain();
+		
 	}
 
 	
