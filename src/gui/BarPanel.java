@@ -30,19 +30,26 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 	//set a pointer to the panel above this one in the panel hierarchy
 	private JPanel contentPanel;
 	private CardLayout screenCards;
-	//declare panels used and layout
-	private MigLayout mig;
+	//declare panels used
 	private JPanel productPanel;
-	private JPanel topPanel;
 	private JPanel orderPanel;
-	private JPanel bottomPanel;
-	private JPanel sidePanel;
+	private JPanel leftPanel;
+	private JPanel keyPadPanel;
+	private JPanel paymentPanel;
+	private JPanel orderButtonPanel;
+	private JPanel accountPanel;
 	//Declare GUI attributes
+	private JTextArea infoArea;
 	private JTextArea testArea;
 	private JButton[][] productButtons;
 	private JButton orderButton;
 	private int[][] orders;
 	private JButton[][] orderedButtons;
+	
+	private JButton[] paymentChoiceButtons;
+	private JButton[] multiplierButtons;
+	private JButton multiplierButton;
+	private JTextArea multiplierArea;
 	//-----------------------------------------------------
 	//ENd of variables for BAR screen
 
@@ -54,15 +61,23 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		contentPanel = contentPanelIn;
 
 		//create the layout
-		mig = new MigLayout("wrap 4","200!","100!");
-		this.setLayout(mig);
+		this.setLayout(new MigLayout("fillx"));
+
 		//initialize the panels
-		productPanel = new JPanel();
-		topPanel = new JPanel();
-		orderPanel = new JPanel();
+		productPanel = new JPanel(); //shows all the productbuttons
+		orderPanel = new JPanel();//shows all current orders as buttons
 		orderPanel.setLayout(new MigLayout("wrap 1"));
-		bottomPanel = new JPanel();
-		sidePanel = new JPanel();
+		leftPanel = new JPanel();//shows orders and keypad
+		keyPadPanel = new JPanel(); //shows the keypad
+		paymentPanel = new JPanel(); //contants buttons for ways of payment and the orderbutton
+		orderButtonPanel = new JPanel();
+		accountPanel = new JPanel();
+		//initialize the orderbutton
+		orderButton = new JButton("Bestel");
+		//initialize the multiplier buttons
+		multiplierButtons = new JButton[9];
+		multiplierArea = new JTextArea();
+		multiplierButton = new JButton("X");
 	}
 
 
@@ -73,12 +88,40 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		curClient = curClientIn;
 		init.reInitializeBar(curBar.getID());
 		ppc = init.getPPC();
-
+		
+		//set the productPanelLayout
+		productPanel.setLayout(new MigLayout("wrap 7, insets 0,fillx",
+											"", //column size
+											"100!")); // row size
+		
+		paymentPanel.setLayout(new MigLayout("wrap 1, insets 0"));
+		orderButtonPanel.setLayout(new MigLayout("wrap 1, insets 0"));
+		keyPadPanel.setLayout(new MigLayout("wrap 3","100!","100!"));
+		leftPanel.setLayout(new MigLayout());
 		//Declare GUI attributes
 		testArea = new JTextArea();
-		testArea.setMinimumSize(new Dimension(200,Run.screenSize.height));
-		testArea.setMaximumSize(new Dimension(200,Run.screenSize.height));
-		testArea.setPreferredSize(new Dimension(200,Run.screenSize.height));
+		infoArea = new JTextArea();
+		//create the payment buttons
+		paymentChoiceButtons = new JButton[4];
+		paymentChoiceButtons[0] = new JButton("PIN");
+		paymentChoiceButtons[1] = new JButton("Contant");
+		paymentChoiceButtons[2] = new JButton("Schrap");
+		paymentChoiceButtons[3] = new JButton("WegBoeken");
+		for(int i =0; i < paymentChoiceButtons.length;i++)
+			paymentChoiceButtons[i].addActionListener(this);
+		
+		//create the multiplierButtons
+		for(int i =0; i < 9; i++)
+		{
+			multiplierButtons[i] = new JButton(Integer.toString(i+1));
+			multiplierButtons[i].addActionListener(this);
+			keyPadPanel.add(multiplierButtons[i],"grow");
+		}
+		keyPadPanel.add(multiplierArea,"span 2, grow");
+		keyPadPanel.add(multiplierButton,"grow");
+		//set orderButton on
+		orderButton.addActionListener(this);
+		
 		productButtons =  new JButton[ppc.getProductClassesSize()][];
 		orders = new int[ppc.getProductClassesSize()][];
 		orderedButtons = new JButton[ppc.getProductClassesSize()][];
@@ -97,16 +140,28 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 				productButtons[i][j].addActionListener(this);
 				productButtons[i][j].addMouseListener(this);
 				productButtons[i][j].setBackground(ppc.getProductClass(i).getColor());
-				this.add(productButtons[i][j],"grow");
+				productPanel.add(productButtons[i][j],"grow");
 			}
 		}
-
-		topPanel.add(new JLabel("PROTEUS ERETES BARGILDE"));
-		sidePanel.add(testArea);
-		this.add(sidePanel,"east");
-		this.add(topPanel,"north");
-		bottomPanel.add(orderPanel);
-		this.add(bottomPanel,"south");
+		//add orders and the keypad to docked panel on the left
+		orderPanel.add(Box.createHorizontalStrut(200),"wrap");
+		leftPanel.add(orderPanel,"h 500:500:");
+		leftPanel.add(keyPadPanel,"south");
+		this.add(leftPanel,"west");
+		
+		//add the different components
+		this.add(testArea,"w 200!,h 500!");
+		for(int i =0; i < paymentChoiceButtons.length;i++)
+		paymentPanel.add(paymentChoiceButtons[i],"w 200! , h 90! , wrap");
+		paymentPanel.add(new JLabel("BETAALWIJZE"),"w 200!,h 90!");
+		this.add(paymentPanel);
+		orderButtonPanel.add(Box.createVerticalStrut(350));
+		orderButtonPanel.add(orderButton,"w 200!, h 150!");
+		this.add(orderButtonPanel);
+		this.add(accountPanel);
+		this.add(infoArea,"w 200!,h 500!, wrap");
+		
+		this.add(productPanel, "south");
 		screenCards.show(contentPanel, "BAR");
 	}
 
@@ -136,6 +191,7 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 					orderPanel.remove(orderedButtons[i][j]);
 					orders[i][j] = 0;
 					this.validate();
+					this.repaint();
 				}
 			}
 		}
@@ -181,7 +237,8 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 						else if(orders[i][j] == 1){
 							orderPanel.remove(orderedButtons[i][j]);
 							orders[i][j]--;
-							orderPanel.validate();
+							this.validate();
+							this.repaint();
 						}
 					}
 				}	

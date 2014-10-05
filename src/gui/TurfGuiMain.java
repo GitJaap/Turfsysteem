@@ -1,8 +1,13 @@
 package gui;
 
 import javax.swing.UIManager.*;
+
 import java.awt.CardLayout;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -54,7 +59,9 @@ public class TurfGuiMain extends JFrame{
 			//set standard initialization variables
 			setTitle("Proteus Turfsysteem");
 			this.setLocation(0,0);
-			this.setSize(Run.screenSize);
+			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+			
+			
 			//create a close operation(this takes care of logout dB operations)
 			setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			this.addWindowListener(exitListener);
