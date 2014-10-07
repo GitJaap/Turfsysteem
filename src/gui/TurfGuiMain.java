@@ -2,15 +2,8 @@ package gui;
 
 import javax.swing.UIManager.*;
 
-import java.awt.CardLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.*;
+import java.awt.event.*;
 
 import javax.swing.*;
 
@@ -45,7 +38,7 @@ public class TurfGuiMain extends JFrame{
 		
 		public TurfGuiMain()
 		{
-			//set the look and feel to nimbus
+			/*//set the look and feel to nimbus
 			try {
 			    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 			        if ("Nimbus".equals(info.getName())) {
@@ -55,7 +48,7 @@ public class TurfGuiMain extends JFrame{
 			    }
 			} catch (Exception e) {
 			    // If Nimbus is not available, you can set the GUI to another look and feel.
-			}
+			}*/
 			//set standard initialization variables
 			setTitle("Proteus Turfsysteem");
 			this.setLocation(0,0);

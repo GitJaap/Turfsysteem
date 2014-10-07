@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.awt.*;
 
+import javax.swing.SwingUtilities;
+
 import database.*;
 
 
@@ -14,8 +16,12 @@ public class Run {
 	{
 		//ProteusGui2 pe = new ProteusGui2();
 		screenSize = new Dimension(screenSize.width,screenSize.height-40);
-		TurfGuiMain gui = new TurfGuiMain();
-		
+		SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+	        	TurfGuiMain gui = new TurfGuiMain();
+	    		
+	        }
+	    });
 	}
 
 	

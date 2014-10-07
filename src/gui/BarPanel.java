@@ -2,7 +2,9 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,9 +49,11 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 	private JButton[][] orderedButtons;
 	
 	private JButton[] paymentChoiceButtons;
+	//keypad buttons
 	private JButton[] multiplierButtons;
 	private JButton multiplierButton;
 	private JTextArea multiplierArea;
+	private int multiplication;
 	//-----------------------------------------------------
 	//ENd of variables for BAR screen
 
@@ -75,8 +79,9 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		//initialize the orderbutton
 		orderButton = new JButton("Bestel");
 		//initialize the multiplier buttons
-		multiplierButtons = new JButton[9];
-		multiplierArea = new JTextArea();
+		multiplierButtons = new JButton[10];
+		multiplierArea = new JTextArea("");
+		multiplierArea.setEditable(false);
 		multiplierButton = new JButton("X");
 	}
 
@@ -88,12 +93,12 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		curClient = curClientIn;
 		init.reInitializeBar(curBar.getID());
 		ppc = init.getPPC();
-		
+		multiplication = 1;
 		//set the productPanelLayout
 		productPanel.setLayout(new MigLayout("wrap 7, insets 0,fillx",
-											"", //column size
-											"100!")); // row size
-		
+				"", //column size
+				"100!")); // row size
+
 		paymentPanel.setLayout(new MigLayout("wrap 1, insets 0"));
 		orderButtonPanel.setLayout(new MigLayout("wrap 1, insets 0"));
 		keyPadPanel.setLayout(new MigLayout("wrap 3","100!","100!"));
@@ -109,19 +114,32 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		paymentChoiceButtons[3] = new JButton("WegBoeken");
 		for(int i =0; i < paymentChoiceButtons.length;i++)
 			paymentChoiceButtons[i].addActionListener(this);
-		
+
 		//create the multiplierButtons
-		for(int i =0; i < 9; i++)
-		{
-			multiplierButtons[i] = new JButton(Integer.toString(i+1));
+		Font font = new Font("Teen",Font.BOLD,72);
+		for(int i =0; i < 10; i++){
+			multiplierButtons[i] = new JButton(Integer.toString(i));
 			multiplierButtons[i].addActionListener(this);
-			keyPadPanel.add(multiplierButtons[i],"grow");
+			multiplierButtons[i].setFont(font);
+			multiplierButtons[i].setForeground(new Color(0,80,255));
+			multiplierButtons[i].setBackground(new Color(255,255,255));
 		}
-		keyPadPanel.add(multiplierArea,"span 2, grow");
+		multiplierButton.addActionListener(this);
+		multiplierButton.setFont(font);
+		multiplierButton.setForeground(new Color(0,80,255));
+		multiplierButton.setBackground(new Color(255,255,255));
+		for(int i =0; i < 3;i++)
+			for(int j=2;j>=0;j--)
+				keyPadPanel.add(multiplierButtons[9-(3*i)-j],"grow");//get the default calculator look
+		keyPadPanel.add(multiplierButtons[0],"grow");
+		keyPadPanel.add(multiplierArea,"grow");
 		keyPadPanel.add(multiplierButton,"grow");
+		multiplierArea.setFont(font);
+		multiplierArea.setForeground(new Color(0,80,255));
+
 		//set orderButton on
 		orderButton.addActionListener(this);
-		
+
 		productButtons =  new JButton[ppc.getProductClassesSize()][];
 		orders = new int[ppc.getProductClassesSize()][];
 		orderedButtons = new JButton[ppc.getProductClassesSize()][];
@@ -148,11 +166,11 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		leftPanel.add(orderPanel,"h 500:500:");
 		leftPanel.add(keyPadPanel,"south");
 		this.add(leftPanel,"west");
-		
+
 		//add the different components
 		this.add(testArea,"w 200!,h 500!");
 		for(int i =0; i < paymentChoiceButtons.length;i++)
-		paymentPanel.add(paymentChoiceButtons[i],"w 200! , h 90! , wrap");
+			paymentPanel.add(paymentChoiceButtons[i],"w 200! , h 90! , wrap");
 		paymentPanel.add(new JLabel("BETAALWIJZE"),"w 200!,h 90!");
 		this.add(paymentPanel);
 		orderButtonPanel.add(Box.createVerticalStrut(350));
@@ -160,8 +178,8 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		this.add(orderButtonPanel);
 		this.add(accountPanel);
 		this.add(infoArea,"w 200!,h 500!, wrap");
-		
-		this.add(productPanel, "south");
+
+		this.add(productPanel,"south");
 		screenCards.show(contentPanel, "BAR");
 	}
 
@@ -182,8 +200,9 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 						orderedButtons[i][j].addMouseListener(this);
 						orderPanel.add(orderedButtons[i][j]);
 					}							
-					orders[i][j]++;
+					orders[i][j] += multiplication;
 					orderedButtons[i][j].setText(orders[i][j] + " x " + ppc.getProductName(i, j));
+					multiplierArea.setText("");
 
 				}
 				if(aE.getSource() == orderedButtons[i][j])
@@ -217,6 +236,22 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 			}
 			testArea.append("Voor een totaal van: " + init.getdf().format((double)totalPrice/100) + "!");
 		}
+
+		//create the event handlers for the multiplication buttons
+		for(int i =0; i < 10; i++){
+			if(aE.getSource() == multiplierButtons[i])
+			{
+				//get the text from the multiplication area and create a multiplication string
+				String multiplicationString = multiplierArea.getText()+Integer.toString(i);
+				multiplication = Integer.parseInt(multiplicationString);
+				multiplierArea.setText(multiplicationString);
+			}
+		}
+		if(aE.getSource() == multiplierButton)
+		{
+			multiplication = 1;
+			multiplierArea.setText("");
+		}
 		//----------------------------------------------------------------------------------------------------------------------------------------------------------
 		//end of eventhandlers for the BAR panel
 
@@ -248,43 +283,43 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 	}
 
 
-		@Override
-		public void mouseEntered(MouseEvent e) {// TODO Auto-generated method stu
-		}
-
-
-
-
-
-
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
-
-
-
-
-
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
-
-
-
-
-
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-
-		}
+	@Override
+	public void mouseEntered(MouseEvent e) {// TODO Auto-generated method stu
 	}
+
+
+
+
+
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+
+
+
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+
+
+
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+}
