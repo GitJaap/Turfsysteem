@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import database.Initializer;
+import database.UpdateThread;
 import database.data.Bar;
 import database.data.Client;
 import main.Run;
@@ -163,7 +164,11 @@ public class StartPanel extends JPanel implements ActionListener{
 						this.repaint();
 						if(bar == true)
 						{
+							//initialize the main bar components
 							barPanel.initBarComponents();
+							//start the updatethread for the bar
+							UpdateThread updater = new UpdateThread(init,barPanel);
+							updater.start();
 							
 						}
 						if(beheer == true)

@@ -92,13 +92,7 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		//read data from database
 		curClient = init.getCurClient();
 		curBar = init.getCurBar();
-		init.reInitializeBar(curBar.getID());
-		ppc = init.getPPC();
 		multiplication = 1;
-		//set the productPanelLayout
-		productPanel.setLayout(new MigLayout("wrap 7, insets 0,fillx",
-				"", //column size
-				"100!")); // row size
 
 		paymentPanel.setLayout(new MigLayout("wrap 1, insets 0"));
 		orderButtonPanel.setLayout(new MigLayout("wrap 1, insets 0"));
@@ -141,6 +135,38 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		//set orderButton on
 		orderButton.addActionListener(this);
 
+		//add orders and the keypad to docked panel on the left
+		orderPanel.add(Box.createHorizontalStrut(200),"wrap");
+		leftPanel.add(orderPanel,"h 500:500:");
+		leftPanel.add(keyPadPanel,"south");
+		this.add(leftPanel,"west");
+
+		//add the different components
+		this.add(testArea,"w 200!,h 500!");
+		for(int i =0; i < paymentChoiceButtons.length;i++)
+			paymentPanel.add(paymentChoiceButtons[i],"w 200! , h 90! , wrap");
+		paymentPanel.add(new JLabel("BETAALWIJZE"),"w 200!,h 90!");
+		this.add(paymentPanel);
+		orderButtonPanel.add(Box.createVerticalStrut(350));
+		orderButtonPanel.add(orderButton,"w 200!, h 150!");
+		this.add(orderButtonPanel);
+		this.add(accountPanel);
+		this.add(infoArea,"w 200!,h 500!, wrap");
+		screenCards.show(contentPanel, "BAR");
+		this.add(productPanel,"south");
+	}
+
+	public void initBarProducts()
+	{
+		productPanel.removeAll();
+		//set the productPanel layout
+		productPanel.setLayout(new MigLayout("wrap 7, insets 0,fillx",
+				"", //column size
+				"100!")); // row size
+		//reInitialize the ppc
+		init.reInitializeBar(curBar.getID());
+		ppc = init.getPPC();
+		//initialize the productButtons
 		productButtons =  new JButton[ppc.getProductClassesSize()][];
 		orders = new int[ppc.getProductClassesSize()][];
 		orderedButtons = new JButton[ppc.getProductClassesSize()][];
@@ -162,28 +188,10 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 				productPanel.add(productButtons[i][j],"grow");
 			}
 		}
-		//add orders and the keypad to docked panel on the left
-		orderPanel.add(Box.createHorizontalStrut(200),"wrap");
-		leftPanel.add(orderPanel,"h 500:500:");
-		leftPanel.add(keyPadPanel,"south");
-		this.add(leftPanel,"west");
-
-		//add the different components
-		this.add(testArea,"w 200!,h 500!");
-		for(int i =0; i < paymentChoiceButtons.length;i++)
-			paymentPanel.add(paymentChoiceButtons[i],"w 200! , h 90! , wrap");
-		paymentPanel.add(new JLabel("BETAALWIJZE"),"w 200!,h 90!");
-		this.add(paymentPanel);
-		orderButtonPanel.add(Box.createVerticalStrut(350));
-		orderButtonPanel.add(orderButton,"w 200!, h 150!");
-		this.add(orderButtonPanel);
-		this.add(accountPanel);
-		this.add(infoArea,"w 200!,h 500!, wrap");
-
-		this.add(productPanel,"south");
-		screenCards.show(contentPanel, "BAR");
+		this.validate();
+		this.repaint();
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent aE) {
 		for(int i = 0; i < ppc.getProductClassesSize();i++){

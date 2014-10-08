@@ -5,7 +5,7 @@ import database.data.ProductPriceClass;
 
 import java.util.*;
 public class Validation {
-	private final int CLIENT_UPDATE_INTERVAL_SEC = 60;
+	private final int CLIENT_UPDATE_INTERVAL_SEC = 2;
 	
 	private DBConnection dB;
 	private int lastClientLogID;
@@ -78,11 +78,14 @@ public class Validation {
 			return true;
 		}
 		else{//we know for sure newPPCID has a valid value
+			//create a new ppc
+			ppcIn.reset();
 			ppcIn.setID(newPPCID);
 			lastAdminChangeID = newAdminID;
 			dB.runQuery(String.format("SELECT class_name FROM product_price_class WHERE product_price_class_id = %d",newPPCID));
 			dB.commit();
 			ppcIn.setName(dB.getNextStr(1));
+			
 			return false;
 		}
 	}

@@ -97,5 +97,12 @@ public class ProductPriceClass {
 		if(classIndex >= 0 && classIndex < productClasses.size())
 			productClasses.get(classIndex).setProduct(productIn, productIndex);
 	}
+	/**
+	 * resets the products and classes to a new empty adress
+	 */
+	public void reset()
+	{
+		productClasses = new ArrayList<ProductClass>();
+	}
 	
 }

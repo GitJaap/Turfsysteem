@@ -33,6 +33,8 @@ public class Initializer {
 		otherSymbols.setDecimalSeparator(',');
 		otherSymbols.setGroupingSeparator('.'); 
 		df = new DecimalFormat("\u20ac0.00", otherSymbols);
+		ppc = new ProductPriceClass();
+
 	}
 	public void reInitializeStart(){
 		//check if all logged-in clients are actually logged in, otherwise log them out
@@ -54,10 +56,7 @@ public class Initializer {
 		}
 	}
 	public void reInitializeBar(int curBarID){
-		//Get the currently active product price class by checking the last admin change
-		ppc = new ProductPriceClass();
-		vn.validateProducts(ppc);
-
+		System.out.println(ppc);
 		//now insert for this price_class the product_classes like eten drinken shift
 		dB.runQuery("Select product_class_id,class_name,class_color_rgb from product_class");
 		dB.commit();
