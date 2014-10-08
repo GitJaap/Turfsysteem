@@ -163,7 +163,7 @@ public class StartPanel extends JPanel implements ActionListener{
 						this.repaint();
 						if(bar == true)
 						{
-							barPanel.initBarComponents(curBar,curClient);
+							barPanel.initBarComponents();
 							
 						}
 						if(beheer == true)

@@ -16,6 +16,7 @@ import javax.swing.*;
 import main.Run;
 import net.miginfocom.swing.MigLayout;
 import database.Initializer;
+import database.Transaction;
 import database.data.Bar;
 import database.data.Client;
 import database.data.ProductPriceClass;
@@ -86,11 +87,11 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 	}
 
 
-	public void initBarComponents(Bar curBarIn, Client curClientIn)
+	public void initBarComponents()
 	{
 		//read data from database
-		curBar = curBarIn;
-		curClient = curClientIn;
+		curClient = init.getCurClient();
+		curBar = init.getCurBar();
 		init.reInitializeBar(curBar.getID());
 		ppc = init.getPPC();
 		multiplication = 1;
@@ -203,6 +204,7 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 					orders[i][j] += multiplication;
 					orderedButtons[i][j].setText(orders[i][j] + " x " + ppc.getProductName(i, j));
 					multiplierArea.setText("");
+					multiplication = 1;
 
 				}
 				if(aE.getSource() == orderedButtons[i][j])
@@ -218,7 +220,8 @@ public class BarPanel extends JPanel implements ActionListener, MouseListener{
 		//create the event handler for the "orderButton" or Afrekenknop
 		if(aE.getSource() == orderButton)
 		{
-			testArea.setText("U heeft de volgende producten besteld: \n");
+			testArea.setText(Transaction.doProductTransaction(init, orders, Transaction.CARD, curClient.getID(), 1));
+			testArea.append("\n"+"U heeft de volgende producten besteld: \n");
 			int totalPrice = 0;
 			for(int i =0; i < ppc.getProductClassesSize();i++)
 			{
